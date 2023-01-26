@@ -11,13 +11,13 @@ Standalone prototype for trying out some ideas.
 - `pip install -r requirements.txt`
 - Create a .env file in the repo root that looks like this:
 
-    # postgres
-    POSTGRES_PASSWORD=<your pg password>
-    POSTGRES_USER=<the pg username you want>
-    POSTGRES_DB=entity-prototype
+        # postgres
+        POSTGRES_PASSWORD=<your pg password>
+        POSTGRES_USER=<the pg username you want>
+        POSTGRES_DB=entity-prototype
 
-    # django
-    SECRET_KEY=<the secret key you want to use>
+        # django
+        SECRET_KEY=<the secret key you want to use>
 
 ## Run it
 
