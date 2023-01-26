@@ -1,0 +1,6 @@
+django
+wheel
+django-environ
+psycopg2-binary
+djangorestframework
+wikidata

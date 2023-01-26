@@ -1,0 +1,8 @@
+.DS_Store
+node_modules
+config.mk
+*.swp
+venv
+*.pyc
+*.sqlite3
+.env
