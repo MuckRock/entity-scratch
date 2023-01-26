@@ -14,6 +14,7 @@ class EntitySerializer(serializers.HyperlinkedModelSerializer):
         fields = [
             "id",
             "wikidata_id",
+            "wikipedia_url",
             "name",
             "owner",
             "description",
@@ -21,6 +22,7 @@ class EntitySerializer(serializers.HyperlinkedModelSerializer):
             "updated_at",
             "access",
         ]
+        # TODO: wikidata_id should be read-only, but only after creation.
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
