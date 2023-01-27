@@ -22,10 +22,9 @@ class Entity(models.Model):
     access = models.CharField(max_length=20, choices=ACCESS_CHOICES, default="Public")
 
     def save(self, *args, **kwargs):
-        update_fields = kwargs.get("update_fields")
-        if update_fields is not None and "wikidata_id" in update_fields:
-            self.wikipedia_url = get_url_for_wikidata_id(self.wikidata_id)
-            super().save(update_fields=["wikidata_id", "wikipedia_url"])
+        if not self.wikipedia_url:
+            self.wikipedia_url = self.get_url_for_wikidata_id(self.wikidata_id)
+            # print("wikipedia_url", self.wikipedia_url)
 
         super().save(*args, **kwargs)
 
