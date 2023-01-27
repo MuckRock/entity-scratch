@@ -3,36 +3,52 @@ from wikidata.client import Client
 
 
 class Entity(models.Model):
-    wikidata_client = None
+    wd_entity = None
 
     ACCESS_CHOICES = [("Public", 0), ("Private", 1)]
 
-    name = models.CharField(max_length=500)
+    # A dictionary with language codes as keys.
+    name = models.JSONField()
     wikidata_id = models.CharField(max_length=16)
-    # It's not unheard of to have urls that are 2000 characters. https://stackoverflow.com/a/417184/87798
-    wikipedia_url = models.CharField(max_length=2000)
+    # A dictionary with language codes as keys.
+    wikipedia_url = models.JSONField()
     owner = models.ForeignKey(
         "auth.User", related_name="entities", on_delete=models.CASCADE
     )
-    description = models.TextField(
-        default="A description of this entity that will be replaced."
-    )
+    description = models.JSONField()
     created_at = models.DateTimeField(auto_now=True)
     updated_at = models.DateTimeField(auto_now_add=True)
     access = models.CharField(max_length=20, choices=ACCESS_CHOICES, default="Public")
 
     def save(self, *args, **kwargs):
+        if not self.wikidata_id:
+            # Unnecessary?
+            raise "Missing wikidata_id in entity."
+
         if not self.wikipedia_url:
-            self.wikipedia_url = self.get_url_for_wikidata_id(self.wikidata_id)
-            # print("wikipedia_url", self.wikipedia_url)
+            self.wikipedia_url = self.get_url_for_wikidata_id()
+
+        if not self.name:
+            self.name = self.get_name_for_wikidata_id()
+
+        if not self.description:
+            self.description = self.get_description_for_wikidata_id()
 
         super().save(*args, **kwargs)
 
-    def get_url_for_wikidata_id(self, wikidata_id):
-        if not self.wikidata_client:
-            self.wikidata_client = Client()
+    def get_wikidata_entity(self):
+        if not self.wd_entity:
+            client = Client()
+            self.wd_entity = client.get(self.wikidata_id, load=True)
+        return self.wd_entity
 
-        wd_entity = self.wikidata_client.get(wikidata_id, load=True)
-        # TODO: Should there be a language property on the entity?
+    def get_url_for_wikidata_id(self):
+        wd_entity = self.get_wikidata_entity()
         # TODO: Use a library that gets this safely.
-        return wd_entity.data["sitelinks"]["enwiki"]["url"]
+        return wd_entity.data["sitelinks"]
+
+    def get_name_for_wikidata_id(self):
+        return self.get_wikidata_entity().label.texts
+
+    def get_description_for_wikidata_id(self):
+        return self.get_wikidata_entity().description.texts

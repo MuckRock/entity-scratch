@@ -8,7 +8,9 @@ class EntitySerializer(serializers.HyperlinkedModelSerializer):
     #     many=True, queryset=Entity.objects.all()
     # )
     owner = serializers.ReadOnlyField(source="owner.username")
-    wikipedia_url = serializers.CharField(allow_blank=True)
+    wikipedia_url = serializers.ReadOnlyField()
+    name = serializers.ReadOnlyField()
+    description = serializers.ReadOnlyField()
 
     class Meta:
         model = Entity
